@@ -31,17 +31,31 @@ describe("HabitRepository", () => {
   });
 
   it("returns an empty list when the file does not exist", async () => {
-    expect(await repository.findAll()).toEqual([]);
+    const habits = await repository.findAll();
+
+    expect(habits).toEqual([]);
   });
 
-  it("persists a habit to the file and returns it", async () => {
-    expect(await repository.save(habit)).toEqual(habit);
-    expect(JSON.parse(await readFile(filePath, "utf-8"))).toEqual([habit]);
+  it("returns the saved habit", async () => {
+    const saved = await repository.save(habit);
+
+    expect(saved).toEqual(habit);
+  });
+
+  it("persists a saved habit to the file", async () => {
+    await repository.save(habit);
+
+    const content = JSON.parse(await readFile(filePath, "utf-8"));
+
+    expect(content).toEqual([habit]);
   });
 
   it("appends to existing habits", async () => {
     await repository.save(habit);
     await repository.save({ ...habit, id: "2" });
-    expect((await repository.findAll()).map((h) => h.id)).toEqual(["1", "2"]);
+
+    const habits = await repository.findAll();
+
+    expect(habits.map((h) => h.id)).toEqual(["1", "2"]);
   });
 });

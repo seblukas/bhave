@@ -11,13 +11,27 @@ describe("App", () => {
   });
   const { app } = new App({ router } as HabitRouter);
 
-  it("parses JSON bodies and mounts the router", async () => {
-    const res = await request(app).post("/echo").send({ a: 1 });
+  it("parses JSON bodies and mounts the router with status 200", async () => {
+    const body = { a: 1 };
+
+    const res = await request(app).post("/echo").send(body);
+
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ a: 1 });
+  });
+
+  it("echoes the parsed JSON body", async () => {
+    const body = { a: 1 };
+
+    const res = await request(app).post("/echo").send(body);
+
+    expect(res.body).toEqual(body);
   });
 
   it("returns 404 for unknown routes", async () => {
-    expect((await request(app).get("/nope")).status).toBe(404);
+    const path = "/nope";
+
+    const res = await request(app).get(path);
+
+    expect(res.status).toBe(404);
   });
 });
